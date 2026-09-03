@@ -1,0 +1,95 @@
+# Aetheria: 简体中文语言文件
+screen.LIGHTING = 光照与阴影系统
+screen.LIGHTING.comment = 调整阳光/月光直接照明、软阴影采样、火把微闪以及次表面透光效果。
+
+screen.ATMOSPHERE = 大气与以太天穹
+screen.ATMOSPHERE.comment = 调整天穹散射渐变、高度体积雾气、晚霞暮光以及夜空以太星云。
+
+screen.WATER = 碧波流体与光学
+screen.WATER.comment = 调整格斯特纳程序波纹、比尔定律吸光消光模型、水底焦散及水面反射。
+
+screen.WIND = 植被动效与风场
+screen.WIND.comment = 调整草地、花簇与树叶随风摆动的速度与摇曳幅度。
+
+screen.CINEMATIC = 电影光学与调色
+screen.CINEMATIC.comment = 调整泛光柔光、ACES 色调映射风格、镜头暗角与轻微色散。
+
+option.SHADOW_QUALITY = 阴影精度
+value.SHADOW_QUALITY.0 = 关闭
+value.SHADOW_QUALITY.1 = 性能优先
+value.SHADOW_QUALITY.2 = 平衡
+value.SHADOW_QUALITY.3 = 高质量
+value.SHADOW_QUALITY.4 = 极致软阴影
+
+option.SHADOW_SAMPLES = 软阴影采样数
+value.SHADOW_SAMPLES.4 = 4次采样 (极速)
+value.SHADOW_SAMPLES.8 = 8次采样 (推荐)
+value.SHADOW_SAMPLES.16 = 16次采样 (超平滑)
+
+option.TORCH_FLICKER = 火把与灯笼微闪动效
+option.TORCH_FLICKER.comment = 模拟真实火焰与气流扰动的柔和暖金光芒微闪。
+
+option.SUBSURFACE_SCATTERING = 植被次表面透光 (SSS)
+option.SUBSURFACE_SCATTERING.comment = 阳光穿透树叶和草叶时的内发光半透明透光感。
+
+option.AMBIENT_BRIGHTNESS = 环境光亮度
+option.AMBIENT_BRIGHTNESS.comment = 调节洞穴与暗处的间接环境漫反射基础亮度。
+
+option.ATMOSPHERIC_FOG = 高度指数体积雾
+option.ATMOSPHERIC_FOG.comment = 基于高度的真实大气雾，迎光时呈现梦幻柔光。
+
+option.CELESTIAL_NEBULA = 夜空以太星云/极光
+option.CELESTIAL_NEBULA.comment = 在晴朗的夜空中渲染缥缈空灵的星云与流光微芒。
+
+option.VIBRANT_SUNSET = 戏剧性晚霞效果
+option.VIBRANT_SUNSET.comment = 日落时分呈现出玫瑰金、晚霞紫与赤金相融的绝美天际线。
+
+option.TWINKLING_STARS = 程序化微闪星辰
+option.TWINKLING_STARS.comment = 夜空繁星闪烁点缀效果。
+
+option.FOG_DENSITY = 雾气浓度
+
+option.WATER_WAVES = 格斯特纳水体波纹
+option.WATER_WAVES.comment = 基于多重谐波计算的动态水面微澜与起伏。
+
+option.WATER_CAUSTICS = 水底光斑焦散
+option.WATER_CAUSTICS.comment = 阳光穿透水体在水底地面投射出的生动动态光纹。
+
+option.WATER_CLARITY = 水体透光色调风格
+value.WATER_CLARITY.0 = 澄澈清溪 (Clear)
+value.WATER_CLARITY.1 = 深海蓝宝石 (Oceanic)
+value.WATER_CLARITY.2 = 热带绿松石 (Tropical)
+
+option.WATER_REFLECTIONS = 水面菲涅尔反射
+option.WATER_REFLECTIONS.comment = 水面反射天空与日月光华。
+
+option.WAVING_GRASS = 草叶与花卉摇曳
+option.WAVING_LEAVES = 树叶轻颤
+option.WIND_SPEED = 风速
+value.WIND_SPEED.1 = 微风轻拂
+value.WIND_SPEED.2 = 怡人春风
+value.WIND_SPEED.3 = 疾风拂过
+
+option.WIND_STRENGTH = 摆动幅度
+value.WIND_STRENGTH.1 = 细微
+value.WIND_STRENGTH.2 = 适中
+value.WIND_STRENGTH.3 = 显著
+
+option.BLOOM_QUALITY = 大气柔光泛光 (Bloom)
+value.BLOOM_QUALITY.0 = 关闭
+value.BLOOM_QUALITY.1 = 柔和
+value.BLOOM_QUALITY.2 = 梦幻
+value.BLOOM_QUALITY.3 = 电影级弥散
+
+option.TONE_MAPPING = 色调映射 (Tone Mapping)
+value.TONE_MAPPING.0 = ACES Filmic (推荐)
+value.TONE_MAPPING.1 = Reinhard 平滑
+value.TONE_MAPPING.2 = 梦幻鲜艳 (Vibrant Fantasy)
+
+option.VIGNETTE = 电影镜头暗角
+option.VIGNETTE.comment = 模拟真实摄影镜头边缘进光衰减，提升画面沉浸感。
+
+option.CHROMATIC_ABERRATION = 边缘微棱镜色散
+option.CHROMATIC_ABERRATION.comment = 屏幕边缘极轻微的光学折射色散效果。
+
+option.SATURATION = 色彩饱和度

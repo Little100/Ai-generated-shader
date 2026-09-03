@@ -1,0 +1,95 @@
+# Aetheria: English Localization
+screen.LIGHTING = Lighting & Shadows
+screen.LIGHTING.comment = Configure direct illumination, soft shadows, and light behavior.
+
+screen.ATMOSPHERE = Atmosphere & Sky
+screen.ATMOSPHERE.comment = Control celestial dome, volumetric fog, sunsets, and cosmic effects.
+
+screen.WATER = Water Physics & Optics
+screen.WATER.comment = Fine-tune procedural Gerstner waves, optical absorption, and caustics.
+
+screen.WIND = Wind & Vegetation Motion
+screen.WIND.comment = Configure swaying flora, leaves, and ambient wind speed.
+
+screen.CINEMATIC = Cinematic & Optics
+screen.CINEMATIC.comment = Adjust bloom, tone mapping, lens vignetting, and chromatic aberration.
+
+option.SHADOW_QUALITY = Shadow Quality
+value.SHADOW_QUALITY.0 = Off
+value.SHADOW_QUALITY.1 = Low
+value.SHADOW_QUALITY.2 = Medium
+value.SHADOW_QUALITY.3 = High
+value.SHADOW_QUALITY.4 = Ultra
+
+option.SHADOW_SAMPLES = Soft Shadow Samples
+value.SHADOW_SAMPLES.4 = 4 Samples (Fast)
+value.SHADOW_SAMPLES.8 = 8 Samples (Balanced)
+value.SHADOW_SAMPLES.16 = 16 Samples (Cinematic)
+
+option.TORCH_FLICKER = Torch Micro-Flicker
+option.TORCH_FLICKER.comment = Adds a warm, subtle, organic flicker to hand torches and lanterns.
+
+option.SUBSURFACE_SCATTERING = Foliage Subsurface Glow
+option.SUBSURFACE_SCATTERING.comment = Backlit translucent glow through leaves and plants.
+
+option.AMBIENT_BRIGHTNESS = Ambient Brightness
+option.AMBIENT_BRIGHTNESS.comment = Adjusts indirect ambient light level in caves and shadowed areas.
+
+option.ATMOSPHERIC_FOG = Volumetric Height Fog
+option.ATMOSPHERIC_FOG.comment = Realistic height-dependent fog with solar forward scattering.
+
+option.CELESTIAL_NEBULA = Nighttime Aurora Nebula
+option.CELESTIAL_NEBULA.comment = Adds a subtle, glowing celestial cosmic ribbon to clear night skies.
+
+option.VIBRANT_SUNSET = Vibrant Sunset
+option.VIBRANT_SUNSET.comment = Dramatic golden, amber, and twilight violet gradients during dusk.
+
+option.TWINKLING_STARS = Twinkling Stars
+option.TWINKLING_STARS.comment = Procedural twinkling stellar dome at night.
+
+option.FOG_DENSITY = Fog Density
+
+option.WATER_WAVES = Water Waves
+option.WATER_WAVES.comment = Procedural Gerstner wave displacement on water surfaces.
+
+option.WATER_CAUSTICS = Water Caustics
+option.WATER_CAUSTICS.comment = Dancing sunlight patterns on submerged river and ocean beds.
+
+option.WATER_CLARITY = Water Clarity Profile
+value.WATER_CLARITY.0 = Crystal Clear
+value.WATER_CLARITY.1 = Oceanic Sapphire
+value.WATER_CLARITY.2 = Tropical Turquoise
+
+option.WATER_REFLECTIONS = Water Reflections
+option.WATER_REFLECTIONS.comment = Screen-space Fresnel reflection of sky and celestial bodies.
+
+option.WAVING_GRASS = Waving Grass & Flowers
+option.WAVING_LEAVES = Waving Tree Leaves
+option.WIND_SPEED = Wind Velocity
+value.WIND_SPEED.1 = Gentle
+value.WIND_SPEED.2 = Normal
+value.WIND_SPEED.3 = Breezy
+
+option.WIND_STRENGTH = Wind Gust Amplitude
+value.WIND_STRENGTH.1 = Subtle
+value.WIND_STRENGTH.2 = Moderate
+value.WIND_STRENGTH.3 = Vivid
+
+option.BLOOM_QUALITY = Atmospheric Bloom
+value.BLOOM_QUALITY.0 = Disabled
+value.BLOOM_QUALITY.1 = Subtle
+value.BLOOM_QUALITY.2 = Dreamy
+value.BLOOM_QUALITY.3 = Cinematic
+
+option.TONE_MAPPING = Tone Mapping
+value.TONE_MAPPING.0 = ACES Filmic
+value.TONE_MAPPING.1 = Reinhard
+value.TONE_MAPPING.2 = Vibrant Fantasy
+
+option.VIGNETTE = Lens Vignette
+option.VIGNETTE.comment = Soft natural camera edge darkening.
+
+option.CHROMATIC_ABERRATION = Chromatic Aberration
+option.CHROMATIC_ABERRATION.comment = Subtle lens prism dispersion at screen borders.
+
+option.SATURATION = Color Saturation
