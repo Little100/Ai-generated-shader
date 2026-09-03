@@ -1,0 +1,63 @@
+screen.LIGHTING=Lighting
+screen.LIGHTING.comment=Sun, sky, block light and foliage motion.
+screen.SHADOWS=Shadows
+screen.SHADOWS.comment=Shadow map resolution, distance and softness.
+screen.ATMOSPHERE=Atmosphere
+screen.ATMOSPHERE.comment=Clouds, stars, light shafts and fog.
+screen.WATER=Water
+screen.WATER.comment=Waves, refraction and clarity.
+screen.POST=Post Processing
+screen.POST.comment=Bloom, exposure, grading, vignette and grain.
+
+profile.LOW=Low
+profile.MEDIUM=Medium
+profile.HIGH=High
+
+option.SUN_INTENSITY=Sun Intensity
+option.SUN_INTENSITY.comment=Brightness of direct sunlight.
+option.SKY_AMBIENT=Sky Ambient
+option.SKY_AMBIENT.comment=Brightness of indirect light from the sky dome.
+option.BLOCKLIGHT_INTENSITY=Block Light Intensity
+option.BLOCKLIGHT_WARMTH=Block Light Warmth
+option.BLOCKLIGHT_WARMTH.comment=Zero keeps torches neutral, higher values push them toward amber.
+option.EMBER_FLICKER=Ember Flicker
+option.EMBER_FLICKER.comment=Slow, subtle flicker on all block light.
+option.HAND_LIGHT=Held Light
+option.HAND_LIGHT.comment=Torches and lanterns in hand light up nearby surfaces.
+option.WIND_STRENGTH=Wind Strength
+option.WIND_STRENGTH.comment=Sway of grass, crops, leaves and vines. Zero disables motion.
+
+option.SHADOW_QUALITY=Shadow Filtering
+option.SHADOW_QUALITY.comment=Number of soft shadow samples.
+value.SHADOW_QUALITY.0=Hard
+value.SHADOW_QUALITY.1=Soft
+value.SHADOW_QUALITY.2=Very Soft
+option.SHADOW_SOFTNESS=Shadow Softness
+option.shadowMapResolution=Shadow Resolution
+option.shadowDistance=Shadow Distance
+option.sunPathRotation=Sun Path Tilt
+option.sunPathRotation.comment=Tilts the sun's path so shadows fall at an angle instead of straight down at noon.
+
+option.CLOUDS=Clouds
+option.CLOUDS.comment=Two procedural cloud layers.
+option.CLOUD_COVERAGE=Cloud Coverage
+option.STARS=Stars
+option.GODRAYS=Light Shafts
+option.GODRAYS_STRENGTH=Light Shaft Strength
+option.FOG_DENSITY=Fog Density
+option.FOG_DENSITY.comment=Atmospheric haze. Zero keeps only the far-distance blend.
+
+option.WATER_WAVE_HEIGHT=Wave Height
+option.WATER_REFRACTION=Refraction
+option.WATER_REFRACTION.comment=Distorts the view through water and glass.
+option.WATER_CLARITY=Water Clarity
+option.WATER_CLARITY.comment=Higher values let you see deeper before the water turns opaque.
+
+option.BLOOM=Bloom
+option.BLOOM_STRENGTH=Bloom Strength
+option.EXPOSURE=Exposure
+option.CONTRAST=Contrast
+option.SATURATION=Saturation
+option.VIGNETTE=Vignette
+option.FILM_GRAIN=Film Grain
+option.GRAIN_STRENGTH=Grain Strength
