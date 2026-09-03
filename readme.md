@@ -12,4 +12,4 @@
  - 内部readme.md为模型的使用情况外加模型原话(如果有)
  - 内部其他文件夹为光影总文件
 
-## 演示效果可以看 (Bilibili合集)[https://www.bilibili.com/video/BV1ZTbC6tEhs]
+## 演示效果可以看 [Bilibili合集](https://www.bilibili.com/video/BV1ZTbC6tEhs)
