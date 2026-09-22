@@ -1,0 +1,39 @@
+option.K_QUALITY=Render quality
+value.K_QUALITY.0=Lean
+value.K_QUALITY.1=Balanced
+value.K_QUALITY.2=Kiln
+value.K_QUALITY.3=Ember
+option.K_QUALITY.comment=Steps used by indirect light, reflections, and shafts
+
+option.K_SHADOW_RES=Shadow resolution
+option.K_SHADOW_DIST=Shadow distance
+option.K_SUN_INTENSITY=Sun
+option.K_MOON_INTENSITY=Moon
+option.K_TORCH_INTENSITY=Firelight
+option.K_EXPOSURE_BIAS=Exposure
+option.K_SATURATION=Saturation
+option.K_VIGNETTE=Vignette
+option.K_BLOOM=Bloom
+option.K_VOLUMETRIC=Light shafts
+option.K_SSGI=Indirect light
+option.K_SSR=Reflections
+option.K_AO=Contact shade
+option.K_WATER_WAVES=Water
+option.K_CLOUD=Clouds
+option.K_GRADE=Color grade
+value.K_GRADE.0=Neutral
+value.K_GRADE.1=Kiln
+value.K_GRADE.2=Ash
+option.K_TA=Temporal blend
+value.K_TA.0=Off
+value.K_TA.1=On
+
+screen.LOOK=Look
+screen.LIGHT=Light
+screen.WORLD=World
+screen.IMAGE=Image
+
+profile.EMBER=Ember
+profile.ASH=Ash
+profile.CLEAR=Clear
+profile.comment=Ember is the intended look. Ash cools the grade. Clear spends less.
