@@ -1,10 +1,6 @@
 #version 330 compatibility
 
-#include "/lib/util.glsl"
-#include "/lib/lighting.glsl"
-#include "/lib/water.glsl"
-
-uniform sampler2D depthtex0;
+#include "/lib/common.glsl"
 
 in vec2 texcoord;
 
@@ -45,14 +41,61 @@ vec3 screenSpaceReflection(vec3 viewPos, vec3 reflectDir, vec2 uv) {
     return vec3(0.0);
 }
 
+// 水面的着色
+vec3 shadeWater(vec3 viewPos, vec3 worldPos, vec3 viewDir, vec3 normal,
+                float thicknessHint, float distance, LightInfo light) {
+    vec3 lightDir = light.direction;
+    vec3 lightColor = light.color;
+
+    if (isEyeInWater == 1) {
+        // 水下看到的是水面内表面, 以全反射与吸收为主
+        vec4 scene = texture2D(colortex0, texcoord);
+        float cosTheta = clamp(dot(normal, viewDir), 0.0, 1.0);
+        float refl = fresnelUnderwater(cosTheta);
+        vec3 totalReflect = renderSky(reflect(-viewDir, normal), false) * 0.35;
+        vec3 result = mix(scene.rgb, totalReflect, refl * 0.6);
+        result += waterSunGlitter(normal, viewDir, lightDir, lightColor, 1.0) * 0.3;
+        return waterAbsorb(result, distance * 0.05);
+    }
+
+    // 水体厚度由水面深度与水下地形深度之差估计
+    vec2 refrUV = clamp(texcoord + refractionOffset(normal, thicknessHint), vec2(0.001), vec2(0.999));
+    vec3 behindView = screenToViewPos(vec3(refrUV, texture2D(depthtex0, refrUV).r));
+    float thickness = max(length(behindView) - distance, 0.0);
+    // 贴着地面时收窄偏移, 免得取到岸上的像素
+    float shoreFade = smoothstep(0.0, 1.4, thickness);
+    refrUV = mix(texcoord, refrUV, shoreFade);
+
+    vec3 refracted = texture2D(colortex0, refrUV).rgb;
+    // 焦散落在透过水面的光照上
+    refracted *= 1.0 + caustics(worldPos.xz, frameTimeCounter, 0.34) * causticsStrength * light.shadowSoft * 0.14;
+
+    vec3 refrColor = waterAbsorb(refracted, thickness * 0.3)
+                   + waterScatter(lightColor) * (1.0 - exp(-thickness * 0.16)) * 1.4;
+
+    // 反射, 屏幕空间命中优先, 未命中回落到天空
+    vec3 reflectDir = reflect(-viewDir, normal);
+    vec3 ssr = screenSpaceReflection(viewPos, reflectDir, texcoord);
+    vec3 skyReflect = renderSky(reflectDir, false) * 0.9;
+    vec3 reflection = mix(skyReflect, ssr, clamp(luminance(ssr) * 2.5, 0.0, 0.7));
+
+    float cosTheta = clamp(dot(normal, viewDir), 0.0, 1.0);
+    float refl = fresnelWater(cosTheta);
+    // 远处视角更平, 反射因此更强
+    refl = mix(refl, clamp(refl * 1.4, 0.0, 1.0), clamp(1.0 - distance / 200.0, 0.0, 1.0));
+
+    return mix(refrColor, reflection, clamp(refl, 0.0, 0.98))
+         + waterSunGlitter(normal, viewDir, lightDir, lightColor, light.shadowSoft);
+}
+
 void main() {
-    vec4 scene = texture2D(colortex0, texcoord);
     vec4 aux = texture2D(colortex4, texcoord);
     int matId = int(aux.z * 255.0 + 0.5);
+    int matSlot = decodeSlot(aux.z);
 
-    // 不是水面的像素原样透传
-    if (matId != MATERIAL_WATER) {
-        gl_FragData[0] = scene;
+    // 不透明像素直接透传
+    if (matSlot != SLOT_WATER && matSlot != SLOT_GLASS) {
+        gl_FragData[0] = texture2D(colortex0, texcoord);
         gl_FragData[1] = aux;
         return;
     }
@@ -62,53 +105,28 @@ void main() {
     float distance = length(viewPos);
     vec3 worldPos = (gbufferModelViewInverse * vec4(viewPos, 1.0)).xyz + cameraPosition;
     vec3 viewDir = normalize(-viewPos);
-
     vec3 normal = decodeNormal(texture2D(colortex1, texcoord).rg);
     vec4 matData = texture2D(colortex3, texcoord);
-    float thicknessHint = matData.a;
 
     LightInfo light = getLightInfo();
-    vec3 lightDir = light.direction;
-    vec3 lightColor = light.color;
-
     vec3 result;
-    if (isEyeInWater == 1) {
-        // 水下看到的是水面内表面, 以反射与吸收为主
-        float cosTheta = clamp(dot(normal, viewDir), 0.0, 1.0);
-        float refl = fresnelUnderwater(cosTheta);
-        vec3 totalReflect = renderSky(reflect(-viewDir, normal), false) * 0.35;
-        result = mix(scene.rgb, totalReflect, refl * 0.6);
-        result += waterSunGlitter(normal, viewDir, lightDir, lightColor, 1.0) * 0.3;
-        result = waterAbsorb(result, distance * 0.05);
-    } else {
-        // 水体厚度由水面深度与水下地形深度之差估计
-        vec2 refrUV = clamp(texcoord + refractionOffset(normal, thicknessHint), vec2(0.001), vec2(0.999));
-        vec3 behindView = screenToViewPos(vec3(refrUV, texture2D(depthtex0, refrUV).r));
-        float thickness = max(length(behindView) - distance, 0.0);
-        // 贴着地面时收窄偏移, 免得取到岸上的像素
-        float shoreFade = smoothstep(0.0, 1.4, thickness);
-        refrUV = mix(texcoord, refrUV, shoreFade);
 
-        vec3 refracted = texture2D(colortex0, refrUV).rgb;
-        // 焦散落在透过水面的光照上
-        float caust = caustics(worldPos.xz, frameTimeCounter, 0.34);
-        refracted *= 1.0 + caust * causticsStrength * light.shadowSoft * 0.14;
-
-        vec3 scattered = waterScatter(lightColor) * (1.0 - exp(-thickness * 0.16)) * 1.4;
-        vec3 refrColor = waterAbsorb(refracted, thickness * 0.3) + scattered;
-
-        // 反射, 屏幕空间命中优先, 未命中回落到天空
+    if (matSlot == SLOT_GLASS) {
+        // 玻璃取不透明场景作为背景, 按自身颜色与厚度混合
+        vec3 tint = srgbToLinear(texture2D(colortex7, texcoord).rgb);
+        float opacity = clamp(1.0 - sqrt(max(abs(matData.a), 0.0)), 0.0, 1.0);
+        vec3 behind = texture2D(colortex0, texcoord).rgb;
+        // 玻璃自身的镜面反射
         vec3 reflectDir = reflect(-viewDir, normal);
-        vec3 ssr = screenSpaceReflection(viewPos, reflectDir, texcoord);
-        vec3 skyReflect = renderSky(reflectDir, false) * 0.9;
-        vec3 reflection = mix(skyReflect, ssr, clamp(luminance(ssr) * 2.5, 0.0, 0.7));
-        float cosTheta = clamp(dot(normal, viewDir), 0.0, 1.0);
-        float refl = fresnelWater(cosTheta);
-        // 远处视角更平, 反射因此更强
-        refl = mix(refl, clamp(refl * 1.4, 0.0, 1.0), clamp(1.0 - distance / 200.0, 0.0, 1.0));
-
-        result = mix(refrColor, reflection, clamp(refl, 0.0, 0.98));
-        result += waterSunGlitter(normal, viewDir, lightDir, lightColor, light.shadowSoft);
+        float refl = fresnelSchlick(clamp(dot(normal, viewDir), 0.0, 1.0), 0.05);
+        vec3 reflection = renderSky(reflectDir, false) * 0.55;
+        vec3 glassColor = mix(behind, behind * tint * 1.2, 0.55)
+                        + reflection * refl * 1.6;
+        result = mix(glassColor, behind, opacity * 0.25);
+        // 让玻璃本身也有一点亮度, 免得看起来像空框
+        result += tint * 0.04 * light.intensity;
+    } else {
+        result = shadeWater(viewPos, worldPos, viewDir, normal, matData.a, distance, light);
     }
 
     gl_FragData[0] = vec4(max(result, 0.0), 1.0);

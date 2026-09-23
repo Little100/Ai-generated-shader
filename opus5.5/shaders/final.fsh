@@ -1,7 +1,6 @@
 #version 330 compatibility
 
-#include "/lib/util.glsl"
-
+#include "/lib/common.glsl"
 in vec2 texcoord;
 
 // 以屏幕中心为基准的暗角, 保持四角压暗而不侵入画面中心
@@ -22,9 +21,6 @@ vec3 splitTone(vec3 color) {
 
 void main() {
     vec3 color = texture2D(colortex0, texcoord).rgb;
-    vec3 bloom = texture2D(colortex6, texcoord).rgb;
-
-    color += bloom;
 
     // 曝光与色调映射
     color *= exposure;

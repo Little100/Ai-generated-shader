@@ -3,6 +3,9 @@
 
 #include "/lib/noise.glsl"
 
+// 天空色, 维度判定与主光源信息, 位于包含链早期
+// 这里只做颜色与方向的判断而不做任何采样, 因此后续所有库都能安全复用
+
 // 天空被拆成三层色带, 天顶, 中段, 地平, 这样日出日落时地平线能独立染成暖色
 const vec3 ZENITH_DAY = vec3(0.128, 0.268, 0.585);
 const vec3 HORIZON_DAY = vec3(0.612, 0.706, 0.878);
@@ -11,15 +14,16 @@ const vec3 HORIZON_NIGHT = vec3(0.036, 0.048, 0.090);
 const vec3 SUNSET_WARM = vec3(1.0, 0.44, 0.17);
 const vec3 SUNSET_SOFT = vec3(0.94, 0.62, 0.36);
 
-// 维度编号, 与 common.glsl 保持一致
+// 维度编号
 #define DIM_OVERWORLD 0
 #define DIM_NETHER 1
 #define DIM_END 2
 
-// 由天空属性区分维度, 不依赖外部配置文件
+// 下界有岩顶而无天光, 末地两者皆无, 据此区分维度而不依赖外部配置文件
+// NETHER_SHADING 与 END_SHADING 为 0 时该维度按主世界处理
 int currentDimension() {
-    if (hasCeiling && !hasSkylight) return DIM_NETHER;
-    if (!hasSkylight && !hasCeiling) return DIM_END;
+    if (NETHER_SHADING == 1 && hasCeiling && !hasSkylight) return DIM_NETHER;
+    if (END_SHADING == 1 && !hasSkylight && !hasCeiling) return DIM_END;
     return DIM_OVERWORLD;
 }
 
@@ -28,7 +32,6 @@ float sunHeight() {
     return clamp(sunPosition.y, -1.0, 1.0);
 }
 
-// 白昼权重, 带柔和过渡
 float dayFactor() {
     return smoothstep(-0.045, 0.16, sunHeight());
 }
@@ -77,6 +80,42 @@ vec3 moonLightColor() {
     return vec3(0.44, 0.56, 0.90);
 }
 
+// 主光源的方向, 颜色与半影宽度, 延迟与阴影阶段共用
+struct LightInfo {
+    vec3 direction;
+    vec3 color;
+    float intensity;
+    float shadowSoft;
+};
+
+LightInfo getLightInfo() {
+    LightInfo li;
+    float sunAmount = smoothstep(-0.08, 0.06, sunHeight());
+    li.direction = normalize(mix(normalize(moonPosition), normalize(sunPosition), sunAmount));
+    li.color = mix(moonLightColor() * MOON_LUMINANCE, sunLightColor() * SUN_LUMINANCE, sunAmount);
+    li.intensity = mix(MOON_LUMINANCE, SUN_LUMINANCE, sunAmount);
+    // 日落与阴天时半影更宽
+    li.shadowSoft = clamp(0.35 + (1.0 - sunAmount) * 0.4 + rainStrength * 0.5, 0.0, 1.0);
+
+    // 下界与末地没有天体, 直射光几乎为零, 靠环境光与方块光支撑
+    int dim = currentDimension();
+    if (dim == DIM_NETHER) {
+        li.color = vec3(1.0, 0.42, 0.20) * 0.55;
+        li.intensity = 0.55;
+        li.shadowSoft = 1.0;
+    } else if (dim == DIM_END) {
+        li.color = vec3(0.72, 0.66, 1.0) * 0.30;
+        li.intensity = 0.30;
+        li.shadowSoft = 1.0;
+    }
+    return li;
+}
+
+// 日光与月光的方向切换, 太阳落山后由月亮接管
+vec3 skyLightDir() {
+    return getLightInfo().direction;
+}
+
 // 星空, 用球面分格哈希撒点, 靠近地平线处削减避免堆积
 vec3 starField(vec3 worldDir, float brightness) {
     if (brightness <= 0.001) return vec3(0.0);
@@ -97,8 +136,7 @@ vec3 starField(vec3 worldDir, float brightness) {
             acc += tint * core * (0.35 + mag * 0.9) * twinkle;
         }
     }
-    float horizonFade = smoothstep(-0.03, 0.28, worldDir.y);
-    return acc * brightness * 0.85 * horizonFade;
+    return acc * brightness * 0.85 * smoothstep(-0.03, 0.28, worldDir.y);
 }
 
 // 银河, 沿一条倾斜带堆放暗弱星云
@@ -106,11 +144,9 @@ vec3 galaxyBand(vec3 worldDir, float brightness) {
     if (brightness <= 0.001) return vec3(0.0);
     vec3 axis = normalize(vec3(0.42, 0.72, -0.55));
     float band = dot(worldDir, axis);
-    float mask = exp(-band * band * 12.0);
-    float n = fbm3(worldDir * 7.0, 4);
-    float shade = smoothstep(0.36, 0.78, n);
+    float n = fbm3(worldDir * 7.0);
     vec3 tint = mix(vec3(0.30, 0.36, 0.62), vec3(0.62, 0.50, 0.58), n);
-    return tint * mask * shade * brightness * 0.16;
+    return tint * exp(-band * band * 12.0) * smoothstep(0.36, 0.78, n) * brightness * 0.16;
 }
 
 // 极光, 由高度与方位共同调制的慢速帘幕
@@ -119,11 +155,10 @@ vec3 aurora(vec3 worldDir, float strength) {
     float h = clamp(worldDir.y, 0.0, 1.0);
     float curtain = smoothstep(0.06, 0.42, h) * smoothstep(0.95, 0.34, h);
     vec2 p = vec2(atan(worldDir.z, worldDir.x) * 2.4, h * 3.2 - frameTimeCounter * 0.012);
-    float n = fbm2(p * vec2(1.6, 0.9), 4);
-    float fold = smoothstep(0.44, 0.86, n);
+    float n = fbm2(p * vec2(1.6, 0.9));
     vec3 tint = mix(vec3(0.12, 0.86, 0.52), vec3(0.28, 0.36, 0.94), n);
     tint = mix(tint, vec3(0.86, 0.24, 0.62), smoothstep(0.72, 0.98, n) * 0.5);
-    return tint * fold * curtain * strength;
+    return tint * smoothstep(0.44, 0.86, n) * curtain * strength;
 }
 
 // 太阳与月亮的圆盘, 带一层柔和外晕
@@ -138,29 +173,24 @@ vec3 celestialDisk(vec3 worldDir, vec3 lightDir, vec3 lightColor, float angularR
 // 月亮相位遮罩, 用横向偏移切出月牙
 float moonPhaseMask(vec3 worldDir, vec3 lightDir) {
     if (moonPhase == 0) return 1.0;
-    vec3 up = normalize(vec3(0.0, 1.0, 0.0));
-    if (abs(dot(up, lightDir)) > 0.99) up = normalize(vec3(1.0, 0.0, 0.0));
+    vec3 up = abs(dot(vec3(0.0, 1.0, 0.0), lightDir)) > 0.99 ? vec3(1.0, 0.0, 0.0) : vec3(0.0, 1.0, 0.0);
     vec3 right = normalize(cross(up, lightDir));
     vec3 upOrtho = cross(lightDir, right);
     float x = dot(worldDir, right);
     float y = dot(worldDir, upOrtho);
     float phase = float(moonPhase) / 8.0;
     float dirSign = sin(phase * TAU) >= 0.0 ? 1.0 : -1.0;
+    // 相位越接近满月, 横向偏移越小, 保留下来的月面越大
     float shift = mix(0.012, 0.058, abs(sin(phase * TAU)));
-    float radius = length(vec2(x + shift * dirSign, y));
-    // 相位越接近满月, 允许的半径越大
-    float limit = sin(0.0205);
-    return step(radius, limit);
+    return step(length(vec2(x + shift * dirSign, y)), sin(0.0205));
 }
 
 // 有云时天空整体压暗并偏灰
 vec3 applyWeatherToSky(vec3 sky, float horizonWeight) {
     float storm = rainStrength * (0.55 + thunderStrength * 0.35);
-    vec3 overcast = vec3(dot(sky, vec3(0.30, 0.58, 0.12)));
-    overcast = mix(overcast, sky * 0.5, 0.25);
+    vec3 overcast = mix(vec3(dot(sky, vec3(0.30, 0.58, 0.12))), sky * 0.5, 0.25);
     vec3 stormy = mix(vec3(0.36, 0.39, 0.44), vec3(0.14, 0.15, 0.19), thunderStrength);
-    vec3 base = mix(sky, overcast * 0.7, clamp(storm, 0.0, 1.0));
-    return mix(base, stormy, clamp(storm * (0.35 + horizonWeight * 0.4), 0.0, 1.0));
+    return mix(mix(sky, overcast * 0.7, clamp(storm, 0.0, 1.0)), stormy, clamp(storm * (0.35 + horizonWeight * 0.4), 0.0, 1.0));
 }
 
 // 洞穴与室内的环境光, 依赖玩家所处亮度而不是时间
@@ -171,9 +201,8 @@ float caveAmbientSkylight() {
 
 // 高度雾密度, 低处堆积, 高处稀薄, 洞穴内另有一层静雾
 float fogDensityAt(vec3 worldPos, float base, float falloff) {
-    float rel = worldPos.y;
-    float heightTerm = exp(-max(rel - 62.0, 0.0) * falloff * 0.006);
-    float lowTerm = exp(-max(62.0 - rel, 0.0) * 0.018);
+    float heightTerm = exp(-max(worldPos.y - 62.0, 0.0) * falloff * 0.006);
+    float lowTerm = exp(-max(62.0 - worldPos.y, 0.0) * 0.018);
     float cave = (1.0 - caveAmbientSkylight()) * 0.35;
     return base * (heightTerm * 0.6 + lowTerm * 0.55 + cave) * 0.0016;
 }

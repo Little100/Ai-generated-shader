@@ -1,7 +1,9 @@
 #ifndef KOMOREBI_WATER
 #define KOMOREBI_WATER
 
-#include "/lib/noise.glsl"
+#include "/lib/material.glsl"
+
+// 水面数学, 波浪, 焦散与吸收
 
 // 三组正弦波叠加成水面, 波长与方向互质, 避免出现明显重复
 const vec2 WAVE_DIR_A = vec2(0.86, 0.51);
@@ -17,8 +19,7 @@ vec2 waveGradient(vec2 worldXZ, float t, float scale) {
         float speed = 1.15 + fi * 0.42;
         vec2 dir = i == 0 ? WAVE_DIR_A : (i == 1 ? WAVE_DIR_B : WAVE_DIR_C);
         float phase = dot(worldXZ, dir) * freq + t * speed;
-        float s = cos(phase) * freq * amp;
-        grad += dir * s;
+        grad += dir * cos(phase) * freq * amp;
         amp *= 0.62;
     }
     return grad * 0.16 * waveHeight;
@@ -45,18 +46,17 @@ vec3 waterVertexOffset(vec3 worldPos, float t) {
     return vec3(0.0, -length(grad) * 0.35, 0.0);
 }
 
-// 焦散, 由俯视的程噪声脊线生成网状亮纹
+// 焦散, 由俯视的山脊噪声生成网状亮纹
 float caustics(vec2 worldXZ, float t, float scale) {
     vec2 p = worldXZ * scale;
     vec2 q = p + vec2(t * 0.06, t * 0.045);
-    float a = ridge3(vec3(q.x, q.y, t * 0.05), 3);
-    float b = ridge3(vec3(q.x * 1.9 + 5.0, q.y * 1.9, t * 0.08), 2);
+    float a = ridge3(vec3(q.x, q.y, t * 0.05));
+    float b = ridge3(vec3(q.x * 1.9 + 5.0, q.y * 1.9, t * 0.08));
     float ridgeMix = a * 0.62 + b * 0.38;
-    float net = pow(clamp(ridgeMix, 0.0, 1.0), 5.0);
-    return net * 3.2;
+    return pow(clamp(ridgeMix, 0.0, 1.0), 5.0) * 3.2;
 }
 
-// 施里克近似, 水面反射随视角陡增
+// 施里克近似, 反射随视角陡增
 float fresnelSchlick(float cosTheta, float f0) {
     return f0 + (1.0 - f0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
 }

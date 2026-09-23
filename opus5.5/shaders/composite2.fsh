@@ -1,10 +1,6 @@
 #version 330 compatibility
 
-#include "/lib/util.glsl"
-#include "/lib/lighting.glsl"
-#include "/lib/clouds.glsl"
-
-uniform sampler2D depthtex0;
+#include "/lib/common.glsl"
 
 in vec2 texcoord;
 
@@ -19,16 +15,17 @@ void main() {
     vec3 worldDir = normalize(viewToWorldDir(screenToViewPos(vec3(texcoord, 1.0))));
     vec3 cameraWorldPos = cameraPosition;
 
-    // 天空像素额外做一次体积云的步进
+    // 天空像素做体积云的步进, 直接合成到天空上
     if (isSky) {
-        float jitter = ign(gl_FragCoord.xy, frameCounter * 1.37);
+        float jitter = ign(gl_FragCoord.xy, frameCounter);
 #ifdef SP_CLOUDS
         vec4 clouds = marchClouds(cameraWorldPos, worldDir, 4200.0, 1.0, jitter);
-#else
-        vec4 clouds = vec4(0.0);
+        if (clouds.a > 0.001) {
+            scene.rgb = mix(scene.rgb, clouds.rgb / max(clouds.a, EPS), clouds.a);
+        }
 #endif
         gl_FragData[0] = scene;
-        gl_FragData[1] = clouds;
+        gl_FragData[1] = aux;
         return;
     }
 
@@ -57,7 +54,9 @@ void main() {
 
     // 水下再叠一层吸收
     if (isEyeInWater == 1) {
-        scene.rgb = underwaterFog(scene.rgb, getLightInfo().color, distance, 1.0 + float(isEyeInWater == 1) * 0.4);
+        // 水里没有直射方向, 光的颜色来自天顶色与生物群系环境
+        vec3 waterLight = mix(skyZenithColor(), skyHorizonColor(), 0.35) * dimensionAmbientGain();
+        scene.rgb = underwaterFog(scene.rgb, waterLight, distance, 1.2);
     }
 
     gl_FragData[0] = scene;

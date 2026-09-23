@@ -20,7 +20,6 @@ const float aoRadius = 1.25; // [0.5 0.75 1.25 2.0 3.0] 遮蔽半径
 const float cloudCoverage = 0.52; // [0.2 0.35 0.52 0.68 0.85] 云量
 const float cloudAltitude = 320.0; // [180.0 240.0 320.0 420.0 560.0] 云高度
 const float cloudThickness = 90.0; // [40.0 60.0 90.0 140.0 220.0] 云厚度
-#define CLOUD_SHADOW_SELF 1 // 云自投影
 
 // 水
 #define WATER_WAVES 1 // 水面波动
@@ -49,10 +48,9 @@ const int shadowMapResolution = 2048; // [1024 1536 2048 3072 4096] 阴影分辨
 #define shadowSamples 12 // [4 8 12 20 32] 阴影采样数
 #define godraySteps 24 // [8 16 24 40 64] 体积光步数
 #define cloudSteps 24 // [12 18 24 36 56] 云步数
-const float renderScale = 1.0; // [0.5 0.75 1.0] 渲染分辨率
 
 // 兼容
-#define DIM_NETHER 0 // [0 1] 下界着色
-#define DIM_END 1 // [0 1] 末地着色
+#define NETHER_SHADING 0 // [0 1] 下界着色
+#define END_SHADING 1 // [0 1] 末地着色
 
 #endif

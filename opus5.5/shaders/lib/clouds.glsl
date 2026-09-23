@@ -2,7 +2,8 @@
 #define KOMOREBI_CLOUDS
 
 #include "/lib/sky.glsl"
-#include "/lib/noise.glsl"
+
+// 体积云, 光线步进加上前方遮蔽估计
 
 // 云在缓冲里的编码, rgb 为散射色, a 为不透明度
 const vec3 CLOUD_EXTINCTION = vec3(0.86, 0.88, 0.94);
@@ -17,8 +18,6 @@ const vec3 CLOUD_EXTINCTION = vec3(0.86, 0.88, 0.94);
 #define CLOUD_LOOP 56
 #else
 #define CLOUD_LOOP 24
-#endif
-
 // 沿光线前方取几个点估计遮蔽, 近似自投影
 float cloudLightMarch(vec3 pos, vec3 lightDir, float lod) {
     float density = 0.0;
@@ -47,23 +46,19 @@ vec4 marchClouds(vec3 rayOrigin, vec3 rayDir, float maxDistance, float lod, floa
     } else {
         float ta = (bottom - rayOrigin.y) / rayDir.y;
         float tb = (top - rayOrigin.y) / rayDir.y;
-        t0 = min(ta, tb);
-        t1 = max(ta, tb);
-        t0 = max(t0, 0.0);
-        t1 = min(t1, maxDistance);
+        t0 = max(min(ta, tb), 0.0);
+        t1 = min(max(ta, tb), maxDistance);
     }
     if (t1 <= t0) return vec4(0.0);
 
-    float segment = t1 - t0;
-    float dt = segment / float(CLOUD_LOOP);
+    float dt = (t1 - t0) / float(CLOUD_LOOP);
     float t = t0 + dt * jitter;
 
     vec3 lightDir = normalize(sunPosition);
     vec3 sunCol = sunLightColor() * SUN_LUMINANCE * 0.15;
     vec3 ambientCol = (skyZenithColor() + skyHorizonColor()) * 0.5;
     // 月亮在夜间同样照亮云底
-    float night = nightFactor();
-    ambientCol = mix(ambientCol, moonLightColor() * 0.35, night * 0.7);
+    ambientCol = mix(ambientCol, moonLightColor() * 0.35, nightFactor() * 0.7);
 
     vec3 scatter = vec3(0.0);
     float transmittance = 1.0;
@@ -72,16 +67,14 @@ vec4 marchClouds(vec3 rayOrigin, vec3 rayDir, float maxDistance, float lod, floa
         vec3 pos = rayOrigin + rayDir * t;
         float density = cloudDensity(pos, cloudCoverage, cloudThickness, lod);
         if (density > 0.002) {
-            float shadowDensity = cloudLightMarch(pos, lightDir, lod * 0.5) * 0.9;
-            float lightTransmit = exp(-shadowDensity * 1.6);
+            float lightTransmit = exp(-cloudLightMarch(pos, lightDir, lod * 0.5) * 1.6);
             // 粉末效应, 云团朝向观察者的边缘更亮
             float powder = 1.0 - exp(-density * 7.0);
             float sunAmount = lightTransmit * mix(1.0, powder, 0.65);
             float phase = 0.6 + 0.4 * pow(max(dot(rayDir, lightDir), 0.0), 8.0);
             vec3 lit = sunCol * sunAmount * phase + ambientCol * 0.55;
             float stepExtinction = exp(-density * dt * 0.016);
-            float stepAlpha = 1.0 - stepExtinction;
-            scatter += lit * density * stepAlpha * transmittance * 5.0;
+            scatter += lit * density * (1.0 - stepExtinction) * transmittance * 5.0;
             transmittance *= stepExtinction;
             if (transmittance < 0.02) break;
         }
@@ -89,13 +82,9 @@ vec4 marchClouds(vec3 rayOrigin, vec3 rayDir, float maxDistance, float lod, floa
         if (t > t1) break;
     }
 
-    float opacity = 1.0 - transmittance;
-    return vec4(scatter * CLOUD_EXTINCTION, clamp(opacity, 0.0, 1.0));
+    return vec4(scatter * CLOUD_EXTINCTION, clamp(1.0 - transmittance, 0.0, 1.0));
 }
 
-// 地面上看到的云影与晴空比例, 供照明使用
-float cloudCoverAt(vec3 worldPos) {
-    return cloudShadowField(worldPos);
-}
+#endif
 
 #endif

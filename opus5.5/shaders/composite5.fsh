@@ -1,10 +1,10 @@
 #version 330 compatibility
 
-#include "/lib/util.glsl"
+#include "/lib/common.glsl"
 
 in vec2 texcoord;
 
-/* RENDERTARGETS: 6 */
+/* RENDERTARGETS: 0 */
 
 // 十三点采样降采样, 抑制闪烁并保住体积
 vec3 downsample13(sampler2D src, vec2 uv, vec2 texel) {
@@ -44,34 +44,22 @@ vec3 upsampleTent(sampler2D src, vec2 uv, vec2 texel) {
 }
 
 void main() {
+    vec4 scene = texture2D(colortex0, texcoord);
     vec2 texel = 1.0 / vec2(viewWidth, viewHeight);
+
 #ifdef BLOOM
     // 五级金字塔, 每级跨度翻倍, 合计覆盖约六十四像素半径
-    vec3 bloom = vec3(0.0);
-    vec3 level = downsample13(colortex0, texcoord, texel);
-    level = downsample13(colortex0, texcoord, texel * 2.0) * 0.7 + level * 0.3;
-    bloom += level;
-
-    level = downsample13(colortex0, texcoord, texel * 4.0);
-    bloom += level * 0.85;
-
-    level = downsample13(colortex0, texcoord, texel * 8.0);
-    bloom += level * 0.7;
-
-    level = downsample13(colortex0, texcoord, texel * 16.0);
-    bloom += level * 0.55;
-
-    level = downsample13(colortex0, texcoord, texel * 32.0);
-    bloom += level * 0.4;
-
+    vec3 bloom = downsample13(colortex6, texcoord, texel);
+    bloom += downsample13(colortex6, texcoord, texel * 2.0) * 0.85;
+    bloom += downsample13(colortex6, texcoord, texel * 4.0) * 0.7;
+    bloom += downsample13(colortex6, texcoord, texel * 8.0) * 0.55;
+    bloom += downsample13(colortex6, texcoord, texel * 16.0) * 0.4;
     // 再叠一层大范围帐篷做柔和铺底
-    vec3 wide = upsampleTent(colortex0, texcoord, texel * 24.0);
-    bloom = bloom * 0.62 + wide * 0.14;
+    bloom = bloom * 0.62 + upsampleTent(colortex6, texcoord, texel * 14.0) * 0.16;
 
-    // 保持能量守恒, 按级数归一
-    float norm = 1.0 + 0.7 + 0.85 + 0.7 + 0.55 + 0.4;
-    gl_FragData[0] = vec4(bloom / norm * bloomStrength * 2.2, 1.0);
-#else
-    gl_FragData[0] = vec4(0.0, 0.0, 0.0, 1.0);
+    float norm = 1.0 + 0.85 + 0.7 + 0.55 + 0.4;
+    scene.rgb += bloom / norm * bloomStrength * 2.4;
 #endif
+
+    gl_FragData[0] = scene;
 }

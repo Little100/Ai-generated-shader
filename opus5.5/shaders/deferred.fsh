@@ -1,12 +1,6 @@
 #version 330 compatibility
 
-#include "/lib/util.glsl"
-#include "/lib/lighting.glsl"
-#include "/lib/sky.glsl"
-#include "/lib/clouds.glsl"
-#include "/lib/material.glsl"
-
-uniform sampler2D depthtex0;
+#include "/lib/common.glsl"
 
 in vec2 texcoord;
 
@@ -67,9 +61,8 @@ void main() {
     if (rawDepth >= 1.0) {
         vec3 skyColor = renderSky(worldDir, true) + renderCelestial(worldDir);
         gl_FragData[0] = vec4(skyColor, 1.0);
-        // 第一通道存该方向的对流层云量, 第二个通道标记天空像素
-        float cover = cloudCoverAt(cameraPosition + worldDir * 400.0);
-        gl_FragData[1] = vec4(cover, 1.0, 0.0, 0.0);
+        // 第三通道标记天空像素, 第二通道给满遮蔽因为天空没有遮挡
+        gl_FragData[1] = vec4(1.0, 1.0, 0.0, 0.0);
         return;
     }
 
@@ -81,6 +74,7 @@ void main() {
     vec2 uv = texcoord;
     vec4 normalData = texture2D(colortex1, uv);
     vec3 normal = decodeNormal(normalData.rg);
+    float aoBias = normalData.b;
     int matId = int(normalData.a * 255.0 + 0.5);
 
     vec4 lightData = texture2D(colortex2, uv);
@@ -95,14 +89,19 @@ void main() {
 
     vec3 albedo = texture2D(colortex7, uv).rgb;
 
-    float ao = computeSSAO(viewPos, normal, dither);
+    // 遮蔽在视角空间计算, 因此法线也要转回视角空间
+    // 遮蔽偏置让树叶与玻璃这类薄面片少受自遮蔽影响
+    float ao = computeSSAO(viewPos, worldToViewDir(normal), dither);
+    ao = mix(ao, 1.0, clamp(aoBias, 0.0, 1.0));
     float skyOcclusion = estimateSkyOcclusion(normal, skyLight, rawDepth);
 
     // 直射光可见度, 云影与树叶光斑依次削减
-    float shadow = sampleShadow(worldPos, normal, lightDir, light.shadowSoft);
+    float shadow = sampleShadow(worldPos, normal, lightDir, light.shadowSoft, ign(gl_FragCoord.xy, frameCounter));
 #ifdef CLOUD_SHADOW
     shadow *= mix(1.0, cloudShadowAmount(worldPos), clamp(light.shadowSoft * 0.4 + 0.6, 0.0, 1.0));
 #endif
+    // 远处阴影平滑退出, 避免出现生硬边界
+    shadow = mix(1.0, shadow, shadowDistanceFade(distance));
     float dapple = dappleMask(worldPos, normal, dappleDepth * shadowSoftness);
     // 光斑是被树冠挡住之后漏下来的亮斑, 只有遮挡处才生效
     shadow = mix(shadow, shadow * (0.35 + 0.65 * dapple), 1.0 - shadow);
@@ -129,7 +128,7 @@ void main() {
 
     // 树叶透光与皮肤次表面
     vec3 scatter = translucentScatter(normal, lightDir, lightColor, leafPass * 0.9);
-    if (matId == MATERIAL_SKIN) scatter += translucentScatter(normal, lightDir, lightColor, 0.22);
+    if (matId == SLOT_ENTITY) scatter += translucentScatter(normal, lightDir, lightColor, 0.22);
 
     // 高光, 金属用反照率做反射色
     vec3 specColor = mix(vec3(0.04), albedo, metalness);
