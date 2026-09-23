@@ -1,0 +1,98 @@
+# 木漏れ日 Komorebi
+
+screen.LIGHTING = 光照
+screen.ATMOSPHERE = 大气
+screen.WATER = 水体
+screen.POST = 后期
+screen.PERFORMANCE = 性能与兼容
+
+option.DAPPLED_LIGHT = 树叶光斑
+option.DAPPLED_LIGHT.comment = 树冠透下的碎光, 关闭后阴影恢复连续
+option.dappleScale = 光斑尺寸
+option.dappleScale.comment = 数值越大光斑越细碎
+option.dappleDepth = 光斑强度
+option.dappleDepth.comment = 亮斑与阴影的对比幅度
+option.shadowSoftness = 阴影柔度
+option.shadowSoftness.comment = 半影的宽度, 越大越接近漫射
+option.shadowDistance = 阴影距离
+option.shadowDistance.comment = 跟随玩家渲染阴影的范围
+option.CLOUD_SHADOW = 云影
+option.CLOUD_SHADOW.comment = 体积云在地面投下的移动暗斑
+
+option.SP_SKY = 程序化天空
+option.SP_SKY.comment = 由三层色带构成的天空, 替代原版渐变
+option.SP_CLOUDS = 体积云
+option.SP_CLOUDS.comment = 光线步进渲染的云层, 开销较大
+option.cloudCoverage = 云量
+option.cloudCoverage.comment = 天空被云覆盖的比例
+option.cloudAltitude = 云高度
+option.cloudAltitude.comment = 云层底部的世界高度
+option.cloudThickness = 云厚度
+option.cloudThickness.comment = 云层的垂直厚度
+option.VOLUMETRIC_FOG = 体积雾
+option.VOLUMETRIC_FOG.comment = 低处积雾高处清澈的高度雾
+option.fogDensity = 雾浓度
+option.fogDensity.comment = 整体雾的浓厚程度
+option.fogHeightFalloff = 雾沉降
+option.fogHeightFalloff.comment = 雾向低处堆积的速度
+option.GOD_RAYS = 体积光
+option.GOD_RAYS.comment = 穿透树叶与云隙的光柱
+option.godrayStrength = 光柱强度
+option.godrayStrength.comment = 光柱的亮度
+
+option.WATER_WAVES = 水面波动
+option.WATER_WAVES.comment = 程序化的波浪与涟漪
+option.waveHeight = 波高
+option.waveHeight.comment = 水面起伏的幅度
+option.WATER_REFLECTION = 水面反射
+option.WATER_REFLECTION.comment = 屏幕空间反射与天空反射的合成
+option.fresnelBias = 水面反射率
+option.fresnelBias.comment = 正视角下的基础反射强度
+option.causticsStrength = 焦散强度
+option.causticsStrength.comment = 水底光纹的明亮程度
+option.wetHighlight = 雨后湿润
+option.wetHighlight.comment = 下雨时表面水膜带来的高光增强
+
+option.BLOOM = 泛光
+option.BLOOM.comment = 亮部溢出的光晕
+option.bloomStrength = 泛光强度
+option.bloomStrength.comment = 光晕的扩散范围与亮度
+option.exposure = 曝光
+option.exposure.comment = 整体亮度增益
+option.colSat = 饱和度
+option.colSat.comment = 最终画面的色彩浓度
+option.TONEMAP_ACES = ACES 映射
+option.TONEMAP_ACES.comment = 开启为 ACES, 关闭为 Hable 曲线
+option.SSAO = 环境遮蔽
+option.SSAO.comment = 屏幕空间的接触阴影
+option.aoStrength = 遮蔽强度
+option.aoStrength.comment = 遮蔽的深浅
+option.aoRadius = 遮蔽半径
+option.aoRadius.comment = 遮蔽作用的世界尺度
+
+option.shadowMapResolution = 阴影分辨率
+option.shadowMapResolution.comment = 阴影贴图的边长
+option.shadowSamples = 阴影采样数
+option.shadowSamples.comment = 每个像素的阴影采样次数, 影响半影质量
+option.godraySteps = 体积光步数
+option.godraySteps.comment = 光柱的步进采样次数
+option.cloudSteps = 云步数
+option.cloudSteps.comment = 云层的光线步进次数
+option.renderScale = 渲染分辨率
+option.renderScale.comment = 降低分辨率可以换取帧率
+option.DIM_NETHER = 下界着色
+option.DIM_NETHER.comment = 为下界提供适配过的光照与雾
+option.DIM_END = 末地着色
+option.DIM_END.comment = 为末地提供适配过的光照与雾
+
+value.DIM_NETHER.0 = 关闭
+value.DIM_NETHER.1 = 开启
+value.DIM_END.0 = 关闭
+value.DIM_END.1 = 开启
+value.TONEMAP_ACES.0 = Hable
+value.TONEMAP_ACES.1 = ACES
+value.renderScale.0.5 = 50%
+value.renderScale.0.75 = 75%
+value.renderScale.1.0 = 100%
+
+profile.comment = 预设, 会覆盖除世界选项外的全部设置

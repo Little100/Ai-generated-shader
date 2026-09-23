@@ -1,0 +1,16 @@
+option.SHADOWS=Soft shadows
+option.SHADOW_SAMPLES=Shadow samples
+option.CLOUDS=Painted clouds
+option.CLOUD_DENSITY=Cloud coverage
+option.FOG_DENSITY=Atmospheric haze
+option.BLOOM_STRENGTH=Light bloom
+option.OUTLINE_STRENGTH=Contour depth
+option.WIND_STRENGTH=Foliage motion
+option.SATURATION=Color saturation
+option.shadowMapResolution=Shadow map size
+option.shadowDistance=Shadow distance
+screen.ATMOSPHERE=Atmosphere
+screen.LIGHT=Lighting
+screen.SURFACE=Surfaces
+screen.POST=Finishing
+profile.comment=Low favors speed; Balanced and High add detail.

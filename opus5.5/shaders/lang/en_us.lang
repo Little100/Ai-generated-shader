@@ -1,0 +1,98 @@
+# Komorebi
+
+screen.LIGHTING = Lighting
+screen.ATMOSPHERE = Atmosphere
+screen.WATER = Water
+screen.POST = Post Processing
+screen.PERFORMANCE = Performance
+
+option.DAPPLED_LIGHT = Dappled Light
+option.DAPPLED_LIGHT.comment = Light filtering through leaves, disable for continuous shadows
+option.dappleScale = Dapple Scale
+option.dappleScale.comment = Higher values make the patches smaller
+option.dappleDepth = Dapple Depth
+option.dappleDepth.comment = Contrast between light patches and shadow
+option.shadowSoftness = Shadow Softness
+option.shadowSoftness.comment = Penumbra width
+option.shadowDistance = Shadow Distance
+option.shadowDistance.comment = Range of shadowed terrain around the player
+option.CLOUD_SHADOW = Cloud Shadows
+option.CLOUD_SHADOW.comment = Drifting dark patches cast by the cloud layer
+
+option.SP_SKY = Procedural Sky
+option.SP_SKY.comment = Custom sky built from three colour bands
+option.SP_CLOUDS = Volumetric Clouds
+option.SP_CLOUDS.comment = Raymarched cloud layer, expensive
+option.cloudCoverage = Cloud Coverage
+option.cloudCoverage.comment = Fraction of sky covered
+option.cloudAltitude = Cloud Altitude
+option.cloudAltitude.comment = World height of the cloud base
+option.cloudThickness = Cloud Thickness
+option.cloudThickness.comment = Vertical extent of the cloud layer
+option.VOLUMETRIC_FOG = Volumetric Fog
+option.VOLUMETRIC_FOG.comment = Height based fog pooling in low ground
+option.fogDensity = Fog Density
+option.fogDensity.comment = Overall fog thickness
+option.fogHeightFalloff = Fog Falloff
+option.fogHeightFalloff.comment = How quickly fog settles into low ground
+option.GOD_RAYS = God Rays
+option.GOD_RAYS.comment = Light shafts through foliage and cloud gaps
+option.godrayStrength = God Ray Strength
+option.godrayStrength.comment = Brightness of the shafts
+
+option.WATER_WAVES = Water Waves
+option.WATER_WAVES.comment = Procedural waves and ripples
+option.waveHeight = Wave Height
+option.waveHeight.comment = Amplitude of the surface
+option.WATER_REFLECTION = Water Reflection
+option.WATER_REFLECTION.comment = Screen space reflections blended with the sky
+option.fresnelBias = Water Reflectivity
+option.fresnelBias.comment = Base reflection at normal incidence
+option.causticsStrength = Caustics
+option.causticsStrength.comment = Brightness of light patterns on the bottom
+option.wetHighlight = Wet Highlight
+option.wetHighlight.comment = Specular boost from a water film while raining
+
+option.BLOOM = Bloom
+option.BLOOM.comment = Glow spilling out of bright areas
+option.bloomStrength = Bloom Strength
+option.bloomStrength.comment = Spread and brightness of the glow
+option.exposure = Exposure
+option.exposure.comment = Overall brightness gain
+option.colSat = Saturation
+option.colSat.comment = Colour intensity of the final image
+option.TONEMAP_ACES = ACES Tonemap
+option.TONEMAP_ACES.comment = ACES when enabled, Hable when disabled
+option.SSAO = Ambient Occlusion
+option.SSAO.comment = Screen space contact shadows
+option.aoStrength = AO Strength
+option.aoStrength.comment = Depth of the occlusion
+option.aoRadius = AO Radius
+option.aoRadius.comment = World scale the occlusion covers
+
+option.shadowMapResolution = Shadow Resolution
+option.shadowMapResolution.comment = Side length of the shadow map
+option.shadowSamples = Shadow Samples
+option.shadowSamples.comment = Shadow taps per pixel, drives penumbra quality
+option.godraySteps = God Ray Steps
+option.godraySteps.comment = Marching samples for light shafts
+option.cloudSteps = Cloud Steps
+option.cloudSteps.comment = Marching samples through the cloud layer
+option.renderScale = Render Scale
+option.renderScale.comment = Lower it to trade resolution for framerate
+option.DIM_NETHER = Nether Shading
+option.DIM_NETHER.comment = Tuned lighting and fog for the Nether
+option.DIM_END = End Shading
+option.DIM_END.comment = Tuned lighting and fog for the End
+
+value.DIM_NETHER.0 = Off
+value.DIM_NETHER.1 = On
+value.DIM_END.0 = Off
+value.DIM_END.1 = On
+value.TONEMAP_ACES.0 = Hable
+value.TONEMAP_ACES.1 = ACES
+value.renderScale.0.5 = 50%
+value.renderScale.0.75 = 75%
+value.renderScale.1.0 = 100%
+
+profile.comment = Presets, these overwrite every setting outside world options

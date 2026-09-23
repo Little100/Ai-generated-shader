@@ -1,0 +1,16 @@
+option.SHADOWS=柔和阴影
+option.SHADOW_SAMPLES=阴影采样
+option.CLOUDS=织纹云层
+option.CLOUD_DENSITY=云量
+option.FOG_DENSITY=空气雾感
+option.BLOOM_STRENGTH=光晕强度
+option.OUTLINE_STRENGTH=轮廓深度
+option.WIND_STRENGTH=植被摆动
+option.SATURATION=色彩饱和度
+option.shadowMapResolution=阴影贴图尺寸
+option.shadowDistance=阴影距离
+screen.ATMOSPHERE=天空与空气
+screen.LIGHT=光照
+screen.SURFACE=表面
+screen.POST=画面润色
+profile.comment=低档偏向流畅，均衡与高档提升细节。
