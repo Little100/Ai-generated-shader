@@ -1,0 +1,28 @@
+{
+  "name": "Asterweave",
+  "target": "Minecraft 1.21.11",
+  "loader": "Iris",
+  "source": "Original GLSL",
+  "files": [
+    "composite.fsh",
+    "composite.vsh",
+    "composite1.fsh",
+    "composite1.vsh",
+    "final.fsh",
+    "final.vsh",
+    "gbuffers_basic.fsh",
+    "gbuffers_basic.vsh",
+    "gbuffers_skybasic.fsh",
+    "gbuffers_skybasic.vsh",
+    "gbuffers_terrain_cutout.fsh",
+    "gbuffers_terrain_cutout.vsh",
+    "gbuffers_terrain.fsh",
+    "gbuffers_terrain.vsh",
+    "gbuffers_textured_lit.fsh",
+    "gbuffers_textured_lit.vsh",
+    "gbuffers_textured.fsh",
+    "gbuffers_textured.vsh",
+    "gbuffers_water.fsh",
+    "gbuffers_water.vsh"
+  ]
+}
